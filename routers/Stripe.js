@@ -1,13 +1,16 @@
-import dotenv from 'dotenv'
-import Stripe from 'stripe'
-import asyncHandler from 'express-async-handler'
-import cors from 'cors'
+import dotenv from "dotenv";
+import Stripe from "stripe";
+import asyncHandler from "express-async-handler";
+import cors from "cors";
 dotenv.config();
 let stripe = Stripe(process.env.Stripe_key);
-import express from 'express'
-export let routerStripe = express.Router()
-routerStripe.post("/create-checkout-session",asyncHandler( async (req, res) => {
-    let lineItems = req.body.products.map((product) => {
+import express from "express";
+export let routerStripe = express.Router();
+routerStripe.post(
+  "/create-checkout-session",
+  asyncHandler(async (req, res) => {
+    let { products } = req.body;
+    let lineItems = products.map((product) => {
       return {
         price_data: {
           currency: "usd",
@@ -23,12 +26,13 @@ routerStripe.post("/create-checkout-session",asyncHandler( async (req, res) => {
         quantity: product?.quantity,
       };
     });
-  const session = await stripe.checkout.sessions.create({
-    line_items: lineItems,
-    mode: "payment",
-    success_url: `http://localhost:5173/success`,
-    cancel_url: `http://localhost:5173`,
-  });
+    const session = await stripe.checkout.sessions.create({
+      line_items: lineItems,
+      mode: "payment",
+      success_url: `http://localhost:5173/success`,
+      cancel_url: `http://localhost:5173`,
+    });
 
-  res.send({url : session.url});
-}));
+    res.send({ url: session.url });
+  })
+);
