@@ -31,18 +31,7 @@ export let Login = expressAsync(async (req, res, next) => {
   let Password = await bcrypt.compare(req.body.password, UserStatus.password);
   if (!Password) return next(ErrorHandler(500, "wrong username or password!"));
   let { password, ...UserInfo } = UserStatus._doc;
-  jwt.sign(
-    { _id: UserInfo._id, isAdmin: UserInfo.isAdmin },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" },
-    (err, token) => {
-      if (err) return next(ErrorHandler(500, "Error while generating token!"));
-      res
-        .cookie("token", token, { httpOnly: true })
-        .status(200)
-        .json({ data: UserInfo });
-    }
-  );
+  res.status(200).json({ data: UserInfo });
 });
 export let Logout = (req, res, next) => {
   try {
