@@ -2,7 +2,6 @@ import expressAsync from "express-async-handler";
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { ErrorHandler } from "../Error/error.js";
-import jwt from "jsonwebtoken";
 export let Register = expressAsync(async (req, res, next) => {
   try {
     let { username, email, password } = req.body;
@@ -33,10 +32,3 @@ export let Login = expressAsync(async (req, res, next) => {
   let { password, ...UserInfo } = UserStatus._doc;
   res.status(200).json({ data: UserInfo });
 });
-export let Logout = (req, res, next) => {
-  try {
-    res.clearCookie("token").status(200).json({ data: "Logged out!" });
-  } catch (error) {
-    next(error);
-  }
-};
