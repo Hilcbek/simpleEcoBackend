@@ -8,31 +8,35 @@ import express from "express";
 export let routerStripe = express.Router();
 routerStripe.post(
   "/create-checkout-session",
-  asyncHandler(async (req, res) => {
-    let { products } = req.body;
-    let lineItems = products.map((product) => {
-      return {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: product?.title,
-            description: String(product?.desc).substring(
-              0,
-              String(product?.desc).length - String(product?.desc).length / 5
-            ),
+  asyncHandler(async (req, res,next) => {
+    try {
+      let { products } = req.body;
+      let lineItems = products.map((product) => {
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: product.title,
+              description: String(product.desc).substring(
+                0,
+                String(product.desc).length - String(product.desc).length / 5
+              ),
+            },
+            unit_amount: product.price * 100,
           },
-          unit_amount: product?.price * 100,
-        },
-        quantity: product?.quantity,
-      };
-    });
-    const session = await stripe.checkout.sessions.create({
-      line_items: lineItems,
-      mode: "payment",
-      success_url: `http://localhost:5173/success`,
-      cancel_url: `http://localhost:5173`,
-    });
+          quantity: product.quantity,
+        };
+      });
+      const session = await stripe.checkout.sessions.create({
+        line_items: lineItems,
+        mode: "payment",
+        success_url: `http://localhost:5173/success`,
+        cancel_url: `http://localhost:5173`,
+      });
 
-    res.send({ url: session.url });
+      res.send({ url: session.url });
+    } catch (error) {
+      next(error)
+    }
   })
 );
