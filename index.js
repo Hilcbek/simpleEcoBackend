@@ -18,7 +18,7 @@ app.use(
   })
 );
 let MONGODB = process.env.MONGODB;
-let PORT = process.env.PORT || 4000;
+let PORT = process.env.PORT;
 mongoose
   .connect(MONGODB)
   .then(() =>
