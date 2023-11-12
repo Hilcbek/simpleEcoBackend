@@ -7,7 +7,7 @@ let stripe = Stripe(process.env.Stripe_key);
 import express from 'express'
 export let routerStripe = express.Router()
 routerStripe.post("/create-checkout-session",asyncHandler( async (req, res) => {
-    let lineItems = req?.body?.products.map((product) => {
+    let lineItems = req.body.products.map((product) => {
       return {
         price_data: {
           currency: "usd",
